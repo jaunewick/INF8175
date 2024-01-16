@@ -164,10 +164,10 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
                 C = problem.getSuccessors(s[0])
                 for c in C:
                     if c[0] not in V:
-                        a = list(s[1])
-                        a.append(c[1])
+                        directions = list(s[1])
+                        directions.append(c[1])
                         g = float(s[2] + c[2])
-                        L.update((c[0], a, g), g)
+                        L.update((c[0], directions, g), g)
                 V.append(s[0])
     util.raiseNotDefined()
 
