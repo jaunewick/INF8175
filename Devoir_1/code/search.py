@@ -19,13 +19,14 @@ Pacman agents (in searchAgents.py).
 
 from custom_types import Direction
 from pacman import GameState
-from typing import Any, Tuple,List
+from typing import Any, Tuple, List
 import util
 
 """
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
+
 
 class SearchProblem:
     """
@@ -35,13 +36,13 @@ class SearchProblem:
     You do not need to change anything in this class, ever.
     """
 
-    def getStartState(self)->Any:
+    def getStartState(self) -> Any:
         """
         Returns the start state for the search problem.
         """
         util.raiseNotDefined()
 
-    def isGoalState(self, state:Any)->bool:
+    def isGoalState(self, state: Any) -> bool:
         """
           state: Search state
 
@@ -49,7 +50,7 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-    def getSuccessors(self, state:Any)->List[Tuple[Any,Direction,int]]:
+    def getSuccessors(self, state: Any) -> List[Tuple[Any, Direction, int]]:
         """
           state: Search state
 
@@ -60,7 +61,7 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-    def getCostOfActions(self, actions:List[Direction])->int:
+    def getCostOfActions(self, actions: List[Direction]) -> int:
         """
          actions: A list of actions to take
 
@@ -70,8 +71,7 @@ class SearchProblem:
         util.raiseNotDefined()
 
 
-
-def tinyMazeSearch(problem:SearchProblem)->List[Direction]:
+def tinyMazeSearch(problem: SearchProblem) -> List[Direction]:
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
     sequence of moves will be incorrect, so only use this for tinyMaze.
@@ -79,9 +79,10 @@ def tinyMazeSearch(problem:SearchProblem)->List[Direction]:
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
 
-def depthFirstSearch(problem:SearchProblem)->List[Direction]:
+
+def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     """
     Search the deepest nodes in the search tree first.
 
@@ -99,43 +100,112 @@ def depthFirstSearch(problem:SearchProblem)->List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
-
+    s = problem.getStartState()
+    L = util.Stack()
+    L.push((s,[]))
+    V = []
+    while not L.isEmpty():
+        s = L.pop()
+        if s[0] not in V:
+            if problem.isGoalState(s[0]):
+                return s[1]
+            else:
+                C = problem.getSuccessors(s[0])
+                for c in C:
+                    if c[0] not in V:
+                        directions = list(s[1])
+                        directions.append(c[1])
+                        L.push((c[0], directions))
+                V.append(s[0])
     util.raiseNotDefined()
 
-
-def breadthFirstSearch(problem:SearchProblem)->List[Direction]:
+def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     """Search the shallowest nodes in the search tree first."""
-
 
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
-
+    s = problem.getStartState()
+    L = util.Queue()
+    L.push((s, []))
+    V = []
+    while not L.isEmpty():
+        s = L.pop()
+        if s[0] not in V:
+            if problem.isGoalState(s[0]):
+                return s[1]
+            else:
+                C = problem.getSuccessors(s[0])
+                for c in C:
+                    if c[0] not in V:
+                        directions = list(s[1])
+                        directions.append(c[1])
+                        L.push((c[0], directions))
+                V.append(s[0])
     util.raiseNotDefined()
 
-def uniformCostSearch(problem:SearchProblem)->List[Direction]:
-    """Search the node of least total cost first."""
 
+def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
+    """Search the node of least total cost first."""
 
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
     '''
-
+    s = problem.getStartState()
+    L = util.PriorityQueue()
+    L.push((s, [], 0), 0)
+    V = []
+    while not L.isEmpty():
+        s = L.pop()
+        if s[0] not in V:
+            if problem.isGoalState(s[0]):
+                return s[1]
+            else:
+                C = problem.getSuccessors(s[0])
+                for c in C:
+                    if c[0] not in V:
+                        a = list(s[1])
+                        a.append(c[1])
+                        g = float(s[2] + c[2])
+                        L.update((c[0], a, g), g)
+                V.append(s[0])
     util.raiseNotDefined()
 
-def nullHeuristic(state:GameState, problem:SearchProblem=None)->List[Direction]:
+
+def nullHeuristic(state: GameState, problem: SearchProblem = None) -> List[Direction]:
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
 
-def aStarSearch(problem:SearchProblem, heuristic=nullHeuristic)->List[Direction]:
+
+def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Direction]:
     """Search the node that has the lowest combined cost and heuristic first."""
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 4 ICI
     '''
-
+    s = problem.getStartState()
+    L = util.PriorityQueue()
+    h = float(heuristic(s,problem))
+    L.push((s, [], 0), h)
+    V = []
+    while not L.isEmpty():
+        s = L.pop()
+        if s[0] not in V:
+            if problem.isGoalState(s[0]):
+                return s[1]
+            else:
+                C = problem.getSuccessors(s[0])
+                for c in C:
+                    if c[0] not in V:
+                        directions = list(s[1])
+                        directions.append(c[1])
+                        g = float(s[2] + c[2])
+                        h = float(heuristic(c[0], problem))
+                        f = g + h
+                        L.update((c[0], directions, g), f)
+                V.append(s[0])
     util.raiseNotDefined()
 
 
