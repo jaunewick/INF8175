@@ -294,6 +294,7 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
+        self.startState = (self.startingPosition, [False, False, False, False])
 
 
     def getStartState(self):
@@ -305,8 +306,7 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
-        
-        util.raiseNotDefined()
+        return self.startState
 
     def isGoalState(self, state):
         """
@@ -316,8 +316,10 @@ class CornersProblem(search.SearchProblem):
         '''
             INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
         '''
-
-        util.raiseNotDefined()
+        for idx, corner in enumerate(self.corners):
+            if state[0] == corner:
+                state[1][idx] = True
+            return all(state[1])
 
     def getSuccessors(self, state):
         """
@@ -342,7 +344,20 @@ class CornersProblem(search.SearchProblem):
             '''
                 INSÉREZ VOTRE SOLUTION À LA QUESTION 5 ICI
             '''
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
+            if not hitsWall:
+                nextxy = (nextx, nexty)
+                nextCorners = [False, False, False, False]
+                for idx, corner in enumerate(self.corners):
+                    if nextxy == corner:
+                        nextCorners[idx] = True
+                    else:
+                        nextCorners[idx] = state[1][idx]
+                successors.append(((nextxy, nextCorners), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -379,8 +394,14 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
-    
-    return 0
+    ((x, y), VisitedCorners) = state
+    h = 0
+    for idx, VisitedCorner in enumerate(VisitedCorners):
+        if not VisitedCorner:
+            g = abs(corners[idx][0] - x) + abs(corners[idx][1] - y)
+            if h < g:
+                h = g
+    return h
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -477,7 +498,17 @@ def foodHeuristic(state, problem: FoodSearchProblem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 7 ICI
     '''
-
-
-    return 0
+    Foods = foodGrid.asList()
+    h = 0
+    for food in Foods:
+        s = (position, food)
+        if s in problem.heuristicInfo:
+            g = problem.heuristicInfo[s]
+        else:
+            searchProblem = PositionSearchProblem(problem.startingGameState, start=position, goal=food)
+            g = len(search.astar(searchProblem))
+            problem.heuristicInfo.setdefault(s, g)
+        if h < g:
+            h = g
+    return h
 

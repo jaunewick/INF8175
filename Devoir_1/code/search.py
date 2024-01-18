@@ -104,7 +104,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     Actions = []
     L = util.Stack()
     L.push((s, Actions))
-    V = set()
+    V = []
     while not L.isEmpty():
         s, Actions = L.pop()
         if s not in V:
@@ -118,7 +118,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
                         newActions = list(Actions)
                         newActions.append(direction)
                         L.push((newState, newActions))
-                V.add(tuple(s))
+                V.append(s)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
@@ -131,7 +131,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     Actions = []
     L = util.Queue()
     L.push((s, Actions))
-    V = set()
+    V = []
     while not L.isEmpty():
         s, Actions = L.pop()
         if s not in V:
@@ -145,7 +145,7 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
                         newActions = list(Actions)
                         newActions.append(direction)
                         L.push((newState, newActions))
-                V.add(tuple(s))
+                V.append(s)
     util.raiseNotDefined()
 
 
@@ -160,7 +160,7 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
     g_s = 0
     L = util.PriorityQueue()
     L.push((s, Actions, g_s), g_s)
-    V = set()
+    V = []
     while not L.isEmpty():
         s, Actions, g_s = L.pop()
         if s not in V:
@@ -175,7 +175,7 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
                         newActions.append(direction)
                         g_c = float(g_s + cost)
                         L.update((state, newActions, g_c), g_c)
-                V.add(tuple(s))
+                V.append(s)
     util.raiseNotDefined()
 
 
@@ -198,7 +198,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     h_s = float(heuristic(s, problem))
     f_s = g_s + h_s
     L.push((s, [], g_s), f_s)
-    V = set()
+    V = []
     while not L.isEmpty():
         s, Actions, g_s = L.pop()
         if s not in V:
@@ -215,7 +215,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
                         h_c = float(heuristic(state, problem))
                         f_c = g_c + h_c
                         L.update((state, newActions, g_c), f_c)
-                V.add(tuple(s))
+                V.append(s)
     util.raiseNotDefined()
 
 
