@@ -101,22 +101,23 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
     s = problem.getStartState()
-    L = util.Stack()
-    L.push((s, []))
+    Actions = []
     V = set()
+    L = util.Stack()
+    L.push((s, Actions))
     while not L.isEmpty():
-        s, actions = L.pop()
+        s, Actions = L.pop()
         if s not in V:
             if problem.isGoalState(s):
-                return actions
+                return Actions
             else:
                 C = problem.getSuccessors(s)
                 for c in C:
-                    state, direction, _ = c
-                    if state not in V:
-                        newActions = list(actions)
+                    newState, direction, _ = c
+                    if newState not in V:
+                        newActions = list(Actions)
                         newActions.append(direction)
-                        L.push((state, newActions))
+                        L.push((newState, newActions))
                 V.add(tuple(s))
     util.raiseNotDefined()
 
@@ -127,22 +128,23 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
     s = problem.getStartState()
-    L = util.Queue()
-    L.push((s, []))
+    Actions = []
     V = set()
+    L = util.Queue()
+    L.push((s, Actions))
     while not L.isEmpty():
-        s, actions = L.pop()
+        s, Actions = L.pop()
         if s not in V:
             if problem.isGoalState(s):
-                return actions
+                return Actions
             else:
                 C = problem.getSuccessors(s)
                 for c in C:
-                    state, direction, _ = c
-                    if state not in V:
-                        newActions = list(actions)
+                    newState, direction, _ = c
+                    if newState not in V:
+                        newActions = list(Actions)
                         newActions.append(direction)
-                        L.push((state, newActions))
+                        L.push((newState, newActions))
                 V.add(tuple(s))
     util.raiseNotDefined()
 
@@ -154,22 +156,24 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
         INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
     '''
     s = problem.getStartState()
-    L = util.PriorityQueue()
-    L.push((s, [], 0), 0)
+    Actions = []
+    g_s = 0
     V = set()
+    L = util.PriorityQueue()
+    L.push((s, Actions, g_s), g_s)
     while not L.isEmpty():
-        s, actions, g_s = L.pop()
+        s, Actions, g_s = L.pop()
         if s not in V:
             if problem.isGoalState(s):
-                return actions
+                return Actions
             else:
                 C = problem.getSuccessors(s)
                 for c in C:
-                    state, direction, d = c
+                    state, direction, cost = c
                     if state not in V:
-                        newActions = list(actions)
+                        newActions = list(Actions)
                         newActions.append(direction)
-                        g_c = float(g_s + d)
+                        g_c = float(g_s + cost)
                         L.update((state, newActions, g_c), g_c)
                 V.add(tuple(s))
     util.raiseNotDefined()
@@ -190,25 +194,27 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     '''
     s = problem.getStartState()
     L = util.PriorityQueue()
+    g_s = 0
     h_s = float(heuristic(s, problem))
-    L.push((s, [], 0), h_s)
+    f_s = g_s + h_s
+    L.push((s, [], g_s), f_s)
     V = set()
     while not L.isEmpty():
-        s, actions, g_s = L.pop()
+        s, Actions, g_s = L.pop()
         if s not in V:
             if problem.isGoalState(s):
-                return actions
+                return Actions
             else:
                 C = problem.getSuccessors(s)
                 for c in C:
-                    state, direction, d = c
+                    state, direction, cost = c
                     if state not in V:
-                        newActions = list(actions)
+                        newActions = list(Actions)
                         newActions.append(direction)
-                        g_c = float(g_s + d)
+                        g_c = float(g_s + cost)
                         h_c = float(heuristic(state, problem))
-                        f = g_c + h_c
-                        L.update((state, newActions, g_c), f)
+                        f_c = g_c + h_c
+                        L.update((state, newActions, g_c), f_c)
                 V.add(tuple(s))
     util.raiseNotDefined()
 
