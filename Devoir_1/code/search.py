@@ -105,18 +105,19 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     L.push((s, []))
     V = set()
     while not L.isEmpty():
-        s = L.pop()
-        if s[0] not in V:
-            if problem.isGoalState(s[0]):
-                return s[1]
+        s, actions = L.pop()
+        if s not in V:
+            if problem.isGoalState(s):
+                return actions
             else:
-                C = problem.getSuccessors(s[0])
+                C = problem.getSuccessors(s)
                 for c in C:
-                    if c[0] not in V:
-                        directions = list(s[1])
-                        directions.append(c[1])
-                        L.push((c[0], directions))
-                V.add(tuple(s[0]))
+                    state, direction, _ = c
+                    if state not in V:
+                        newActions = list(actions)
+                        newActions.append(direction)
+                        L.push((state, newActions))
+                V.add(tuple(s))
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
@@ -130,18 +131,19 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     L.push((s, []))
     V = set()
     while not L.isEmpty():
-        s = L.pop()
-        if s[0] not in V:
-            if problem.isGoalState(s[0]):
-                return s[1]
+        s, actions = L.pop()
+        if s not in V:
+            if problem.isGoalState(s):
+                return actions
             else:
-                C = problem.getSuccessors(s[0])
+                C = problem.getSuccessors(s)
                 for c in C:
-                    if c[0] not in V:
-                        directions = list(s[1])
-                        directions.append(c[1])
-                        L.push((c[0], directions))
-                V.add(tuple(s[0]))
+                    state, direction, _ = c
+                    if state not in V:
+                        newActions = list(actions)
+                        newActions.append(direction)
+                        L.push((state, newActions))
+                V.add(tuple(s))
     util.raiseNotDefined()
 
 
@@ -156,19 +158,20 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
     L.push((s, [], 0), 0)
     V = set()
     while not L.isEmpty():
-        s = L.pop()
-        if s[0] not in V:
-            if problem.isGoalState(s[0]):
-                return s[1]
+        s, actions, g_s = L.pop()
+        if s not in V:
+            if problem.isGoalState(s):
+                return actions
             else:
-                C = problem.getSuccessors(s[0])
+                C = problem.getSuccessors(s)
                 for c in C:
-                    if c[0] not in V:
-                        directions = list(s[1])
-                        directions.append(c[1])
-                        g = float(s[2] + c[2])
-                        L.update((c[0], directions, g), g)
-                V.add(tuple(s[0]))
+                    state, direction, d = c
+                    if state not in V:
+                        newActions = list(actions)
+                        newActions.append(direction)
+                        g_c = float(g_s + d)
+                        L.update((state, newActions, g_c), g_c)
+                V.add(tuple(s))
     util.raiseNotDefined()
 
 
@@ -187,25 +190,26 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     '''
     s = problem.getStartState()
     L = util.PriorityQueue()
-    h = float(heuristic(s,problem))
-    L.push((s, [], 0), h)
+    h_s = float(heuristic(s, problem))
+    L.push((s, [], 0), h_s)
     V = set()
     while not L.isEmpty():
-        s = L.pop()
-        if s[0] not in V:
-            if problem.isGoalState(s[0]):
-                return s[1]
+        s, actions, g_s = L.pop()
+        if s not in V:
+            if problem.isGoalState(s):
+                return actions
             else:
-                C = problem.getSuccessors(s[0])
+                C = problem.getSuccessors(s)
                 for c in C:
-                    if c[0] not in V:
-                        directions = list(s[1])
-                        directions.append(c[1])
-                        g = float(s[2] + c[2])
-                        h = float(heuristic(c[0], problem))
-                        f = g + h
-                        L.update((c[0], directions, g), f)
-                V.add(tuple(s[0]))
+                    state, direction, d = c
+                    if state not in V:
+                        newActions = list(actions)
+                        newActions.append(direction)
+                        g_c = float(g_s + d)
+                        h_c = float(heuristic(state, problem))
+                        f = g_c + h_c
+                        L.update((state, newActions, g_c), f)
+                V.add(tuple(s))
     util.raiseNotDefined()
 
 
