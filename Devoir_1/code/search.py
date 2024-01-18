@@ -102,9 +102,9 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     '''
     s = problem.getStartState()
     Actions = []
-    V = set()
     L = util.Stack()
     L.push((s, Actions))
+    V = set()
     while not L.isEmpty():
         s, Actions = L.pop()
         if s not in V:
@@ -129,9 +129,9 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     '''
     s = problem.getStartState()
     Actions = []
-    V = set()
     L = util.Queue()
     L.push((s, Actions))
+    V = set()
     while not L.isEmpty():
         s, Actions = L.pop()
         if s not in V:
@@ -158,9 +158,9 @@ def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
     s = problem.getStartState()
     Actions = []
     g_s = 0
-    V = set()
     L = util.PriorityQueue()
     L.push((s, Actions, g_s), g_s)
+    V = set()
     while not L.isEmpty():
         s, Actions, g_s = L.pop()
         if s not in V:
