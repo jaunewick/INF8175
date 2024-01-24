@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -52,7 +52,7 @@ class SearchProblem:
 
     def getSuccessors(self, state: Any) -> List[Tuple[Any, Direction, int]]:
         """
-          state: Search state
+        state: Search state
 
         For a given state, this should return a list of triples, (successor,
         action, stepCost), where 'successor' is a successor to the current
@@ -63,7 +63,7 @@ class SearchProblem:
 
     def getCostOfActions(self, actions: List[Direction]) -> int:
         """
-         actions: A list of actions to take
+        actions: A list of actions to take
 
         This method returns the total cost of a particular sequence of actions.
         The sequence must be composed of legal moves.
@@ -100,25 +100,25 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
     '''
-    s = problem.getStartState()
-    Actions = []
-    L = util.Stack()
-    L.push((s, Actions))
-    V = []
+    state = problem.getStartState() # Initial state for graph search
+    actions = []
+    L = util.Stack() # initialize the stack structure for the graph search
+    L.push((state, actions)) # stack initial state and actions tuple
+    V = [] # Visited states  are stored in memory to avoid infinite loops
     while not L.isEmpty():
-        s, Actions = L.pop()
-        if s not in V:
-            if problem.isGoalState(s):
-                return Actions
-            else:
-                C = problem.getSuccessors(s)
-                for c in C:
-                    newState, direction, _ = c
-                    if newState not in V:
-                        newActions = list(Actions)
+        state, actions = L.pop() # pop the last stacked tuple
+        if state not in V: # if state is not already visited
+            if problem.isGoalState(state): # check if state is goal state
+                return actions
+            else: # if not goal state
+                successors = problem.getSuccessors(state) # get current node successors in graph
+                for successor in successors: # for each successor in nodes successors list, evaluate
+                    newState, direction, _ = successor # get successor state, direction and cost
+                    if newState not in V: # visit successor if not already visited
+                        newActions = list(actions)
                         newActions.append(direction)
                         L.push((newState, newActions))
-                V.append(s)
+                V.append(state)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
@@ -127,25 +127,25 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
     '''
-    s = problem.getStartState()
-    Actions = []
+    state = problem.getStartState()
+    actions = []
     L = util.Queue()
-    L.push((s, Actions))
+    L.push((state, actions))
     V = []
     while not L.isEmpty():
-        s, Actions = L.pop()
-        if s not in V:
-            if problem.isGoalState(s):
-                return Actions
+        state, actions = L.pop()
+        if state not in V:
+            if problem.isGoalState(state):
+                return actions
             else:
-                C = problem.getSuccessors(s)
-                for c in C:
-                    newState, direction, _ = c
+                successors = problem.getSuccessors(state)
+                for successor in successors:
+                    newState, direction, _ = successor
                     if newState not in V:
-                        newActions = list(Actions)
+                        newActions = list(actions)
                         newActions.append(direction)
                         L.push((newState, newActions))
-                V.append(s)
+                V.append(state)
     util.raiseNotDefined()
 
 
