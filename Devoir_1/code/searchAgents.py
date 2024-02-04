@@ -1,3 +1,8 @@
+# Nom                 Matricule
+# Daniel Giao         xxxxxxxx
+# Renel Lherisson     
+
+
 # searchAgents.py
 # ---------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -25,10 +30,6 @@ description.
 
 Please only change the parts of the file you are asked to.  Look for the lines
 that say
-
-'''
-    INSÉREZ VOTRE SOLUTION À LA QUESTION XX ICI
-'''
 
 
 The parts you fill in start about 3/4 of the way down.  Follow the project
@@ -394,10 +395,10 @@ def cornersHeuristic(state, problem):
     '''
         INSÉREZ VOTRE SOLUTION À LA QUESTION 6 ICI
     '''
-    ((x, y), VisitedCorners) = state
+    ((x, y), visitedCorners) = state
     h = 0
-    for idx, VisitedCorner in enumerate(VisitedCorners):
-        if not VisitedCorner:
+    for idx, visitedCorner in enumerate(visitedCorners):
+        if not visitedCorner:
             g = abs(corners[idx][0] - x) + abs(corners[idx][1] - y)
             if h < g:
                 h = g

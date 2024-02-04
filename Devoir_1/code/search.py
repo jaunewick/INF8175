@@ -1,3 +1,8 @@
+# Nom                 Matricule
+# Daniel Giao         xxxxxxxx
+# Renel Lherisson     xxxxxxxx
+
+
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -96,85 +101,126 @@ def depthFirstSearch(problem: SearchProblem) -> List[Direction]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-
-    '''
-        INSÉREZ VOTRE SOLUTION À LA QUESTION 1 ICI
-    '''
-    state = problem.getStartState() # Initial state for graph search
+    # Get initial state for graph search
+    state = problem.getStartState()
     actions = []
-    L = util.Stack() # initialize the stack structure for the graph search
-    L.push((state, actions)) # stack initial state and actions tuple
-    V = [] # Visited states  are stored in memory to avoid infinite loops
+    # initialize the stack structure for the graph search (LIFO)
+    L = util.Stack()
+    # stack initial state and actions tuple
+    L.push((state, actions))
+    # All Visited states  are stored in memory to avoid infinite loops in revisiting a visited state
+    V = []
+    # loop on states and successors to find goal state
+    # avoid visiting already visited states
     while not L.isEmpty():
-        state, actions = L.pop() # pop the last stacked tuple
-        if state not in V: # if state is not already visited
-            if problem.isGoalState(state): # check if state is goal state
+        # pop two components of the last stacked tuple from the stack
+        state, actions = L.pop()
+        # if state is not already visited
+        if state not in V:
+            # check if current state is goal state and return its actions
+            if problem.isGoalState(state):
                 return actions
-            else: # if not goal state
-                successors = problem.getSuccessors(state) # get current node successors in graph
-                for successor in successors: # for each successor in nodes successors list, evaluate
-                    newState, direction, _ = successor # get successor state, direction and cost
-                    if newState not in V: # visit successor if not already visited
+            # if not goal state
+            else:
+                # get current node successors in graph
+                successors = problem.getSuccessors(state)
+                # for each successor in nodes successors list, evaluate
+                for successor in successors:
+                    # get successor state, direction and cost from the successor tuple
+                    newState, direction, _ = successor
+                    # visit successor if not already visited
+                    if newState not in V:
+                        # update actions list indicating the path to the successor from the initial state
                         newActions = list(actions)
                         newActions.append(direction)
+                        # push the new state and its actions to the stack
                         L.push((newState, newActions))
+                # mark the current state as visited
                 V.append(state)
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Direction]:
     """Search the shallowest nodes in the search tree first."""
 
-    '''
-        INSÉREZ VOTRE SOLUTION À LA QUESTION 2 ICI
-    '''
+    # Get initial state for graph search
     state = problem.getStartState()
     actions = []
+    # initialize the Queue structure for the graph search (FIFO)
     L = util.Queue()
+    # add initial state and actions tuple to the queue
     L.push((state, actions))
+    # All Visited states  are stored in memory to avoid infinite loops in revisiting a visited state
     V = []
+    # loop on states and successors to find goal state
+    # avoid visiting already visited states
     while not L.isEmpty():
+        # pop two components of the last queued tuple from the queue
         state, actions = L.pop()
+        # if state is not already visited
         if state not in V:
+            # check if current state is goal state and return its actions
             if problem.isGoalState(state):
                 return actions
+            # if not goal state
             else:
+                # get current node successors in graph
                 successors = problem.getSuccessors(state)
+                # for each successor in nodes successors list, evaluate
                 for successor in successors:
+                    # get successor state, direction and cost from the successor tuple
                     newState, direction, _ = successor
+                    # visit successor if not already visited
                     if newState not in V:
+                        # update actions list indicating the path to the successor from the initial state
                         newActions = list(actions)
                         newActions.append(direction)
+                        # push the new state and its actions to the queue
                         L.push((newState, newActions))
+                # mark the current state as visited
                 V.append(state)
     util.raiseNotDefined()
 
 
 def uniformCostSearch(problem: SearchProblem) -> List[Direction]:
     """Search the node of least total cost first."""
-
-    '''
-        INSÉREZ VOTRE SOLUTION À LA QUESTION 3 ICI
-    '''
+    # Get initial state for graph search
     s = problem.getStartState()
-    Actions = []
+    actions = []
+    # cost from the initial state to the current state (initially 0)
     g_s = 0
+    # initialize the PriorityQueue structure for the graph search
     L = util.PriorityQueue()
-    L.push((s, Actions, g_s), g_s)
+    # add initial state, actions and cost tuple to the priority queue
+    L.push((s, actions, g_s), g_s)
+    # All Visited states  are stored in memory to avoid infinite loops in revisiting a visited state
     V = []
+    # loop on states and successors to find goal state
     while not L.isEmpty():
-        s, Actions, g_s = L.pop()
+        # pop three components tuple of the priority queue (state, actions, cost) based on the least cost
+        s, actions, g_s = L.pop()
+        # if state is not already visited
         if s not in V:
+            # check if current state is goal state and return its actions
             if problem.isGoalState(s):
-                return Actions
+                return actions
+            # if not goal state
             else:
+                # get current node successors in graph
                 C = problem.getSuccessors(s)
+                # for each successor in nodes successors list, evaluate
                 for c in C:
+                    # get successor state, direction and cost from the successor tuple
                     state, direction, cost = c
                     if state not in V:
-                        newActions = list(Actions)
+                        # update actions list indicating the path to the successor from the initial state
+                        newActions = list(actions)
+                        # add the direction to the actions list
                         newActions.append(direction)
+                        # update the cost from the initial state to the current state
                         g_c = float(g_s + cost)
+                        # push the new state, its actions and cost to the priority queue
                         L.update((state, newActions, g_c), g_c)
+                # mark the current state as visited
                 V.append(s)
     util.raiseNotDefined()
 
@@ -189,32 +235,49 @@ def nullHeuristic(state: GameState, problem: SearchProblem = None) -> List[Direc
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Direction]:
     """Search the node that has the lowest combined cost and heuristic first."""
-    '''
-        INSÉREZ VOTRE SOLUTION À LA QUESTION 4 ICI
-    '''
+
+    # Get initial state for graph search
     s = problem.getStartState()
+    # initialize the PriorityQueue structure for the graph search
     L = util.PriorityQueue()
+    # cost from the initial state to the current state (initially 0)
     g_s = 0
+    # cost from current node to final node
     h_s = float(heuristic(s, problem))
+    # sum of the two costs
     f_s = g_s + h_s
+    # add tuple to the priority queue
     L.push((s, [], g_s), f_s)
+    # All Visited states  are stored in memory to avoid infinite loops in revisiting a visited state
     V = []
+    # loop on state and successors to find goal state
     while not L.isEmpty():
-        s, Actions, g_s = L.pop()
+        # pop three components tuple of the priority queue based on the least total cost
+        s, actions, g_s = L.pop()
+        # if state is not already visited
         if s not in V:
+            # check if current state is goal state and return its actions
             if problem.isGoalState(s):
-                return Actions
+                return actions
+            # if not goal state
             else:
+                # get current node successors in graph
                 C = problem.getSuccessors(s)
+                # for each successor in nodes successors list, evaluate
                 for c in C:
+                    # get successor state, direction and cost from the successor tuple
                     state, direction, cost = c
                     if state not in V:
-                        newActions = list(Actions)
+                        # update actions list indicating the path to the successor from the initial state
+                        newActions = list(actions)
                         newActions.append(direction)
+                        # update the cost from the initial state to the current state and the cost from current node to final node
                         g_c = float(g_s + cost)
                         h_c = float(heuristic(state, problem))
                         f_c = g_c + h_c
+                        # push the new state, its actions and cost to the priority queue
                         L.update((state, newActions, g_c), f_c)
+                # mark the current state as visited
                 V.append(s)
     util.raiseNotDefined()
 
