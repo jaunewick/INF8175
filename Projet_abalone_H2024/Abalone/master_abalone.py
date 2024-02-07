@@ -24,7 +24,7 @@ class MasterAbalone(GameMaster):
 
     def __init__(self, name: str, initial_game_state: GameStateAbalone, players_iterator: Iterable[PlayerAbalone], log_level: str, port: int = 8080, hostname: str = "localhost") -> None:
         super().__init__(name, initial_game_state, players_iterator, log_level, port, hostname)
-        
+
     def compute_winner(self, scores: Dict[int, float]) -> List[PlayerAbalone]:
         """
         Computes the winners of the game based on the scores.

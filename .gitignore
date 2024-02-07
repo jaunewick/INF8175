@@ -151,3 +151,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .DS_Store
+
+Projet_abalone_H2024/.idea/
+Projet_abalone_H2024/Abalone/__pycache__/
+Projet_abalone_H2024/Abalone/random_player_abalone*
+Devoir_1/.idea/
+Devoir_1/code/__pycache__/
+Devoir_1/code/layouts/
