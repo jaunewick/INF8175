@@ -3,8 +3,8 @@ from typing import List, Tuple
 import random
 
 """ 
-    Binome 1 : Nom Prenom (Matricule)
-    Binome 2 : Nom Prenom (Matricule)
+    Binome 1 : Renel Lherisson (2089776)
+    Binome 2 : Daniel Giao (2120073)
     Description succinte de l'implementation :
     ...
 """
