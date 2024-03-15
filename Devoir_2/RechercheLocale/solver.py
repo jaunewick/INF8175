@@ -5,45 +5,16 @@ import random
 """ 
     Binome 1 : Renel Lherisson (2089776)
     Binome 2 : Daniel Giao (2120073)
+
     Description succinte de l'implementation :
+    La fonction solve utilise une recherche locale avec redémarrages.
+    Elle génère des solutions initiales aléatoires
+    et améliore ces solutions en inversant l'état des stations principales (ouvertes/fermées)
+    et en recalculant les associations des stations satellites pour minimiser le coût.
+    Le redémarrage permet de s'en sortir des minimas locaux.
+    Ainsi, la meilleure solution trouvée est retournée au cours de tous les redémarrages.
     ...
 """
-
-def solve_brute_force(problem: UFLP) -> Tuple[List[int], List[int]]:
-    """
-    Votre implementation, doit resoudre le probleme via recherche locale.
-
-    Args:
-        problem (UFLP): L'instance du probleme à résoudre
-
-    Returns:
-        Tuple[List[int], List[int]]: 
-        La premiere valeur est une liste représentant les stations principales ouvertes au format [0, 1, 0] qui indique que seule la station 1 est ouverte
-        La seconde valeur est une liste représentant les associations des stations js au format [1 , 4] qui indique que la premiere station est associée à la station pricipale d'indice 1 et la deuxieme à celle d'indice 4
-    """
-    # run the solver brute force
-    n = problem.n_j_station
-    k = problem.n_main_station
-    main_station_opened = [0] * k
-    association_index = [0] * n
-    main_station_opened[0] = 1
-    actual_cost = problem.calculate_cost(main_station_opened, association_index)
-
-    for i in range(k):
-        main_station_opened[i] = 1
-        old_cost = actual_cost
-        for j in range(n):
-            old_index = association_index[j]
-            association_index[j] = i
-            new_cost = problem.calculate_cost(main_station_opened, association_index)
-            if new_cost < actual_cost:
-                actual_cost = new_cost
-            else:
-                association_index[j] = old_index
-        if actual_cost == old_cost:
-            main_station_opened[i] = 0
-    return main_station_opened, association_index
-
 
 def solve(problem: UFLP) -> Tuple[List[int], List[int]]:
     """
