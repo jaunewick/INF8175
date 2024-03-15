@@ -63,49 +63,58 @@ def solve(problem: UFLP) -> Tuple[List[int], List[int]]:
     # k : Nombre de stations principales
     k = problem.n_main_station
 
-    # Génération d'une solution initiale aléatoire
-    main_station_opened = [random.randint(0, 1) for _ in range(k)]
-    # Au moins une station principale doit être ouverte, sinon infaisable
-    while sum(main_station_opened) == 0:
+    best_cost = float('inf')
+    best_solution = ([], [])
+    restart = 10
+    for _ in range(restart):
+        # Génération d'une solution initiale aléatoire
         main_station_opened = [random.randint(0, 1) for _ in range(k)]
-    open_stations = [i for i, station in enumerate(main_station_opened) if station == 1]
-    association_index = [random.choice(open_stations) for _ in range(n)]
+        # Au moins une station principale doit être ouverte, sinon infaisable
+        while sum(main_station_opened) == 0:
+            main_station_opened = [random.randint(0, 1) for _ in range(k)]
+        open_stations = [i for i, station in enumerate(main_station_opened) if station == 1]
+        association_index = [random.choice(open_stations) for _ in range(n)]
 
-    # Cout de la solution initiale
-    actual_cost = problem.calculate_cost(main_station_opened, association_index)
+        # Cout de la solution initiale
+        actual_cost = problem.calculate_cost(main_station_opened, association_index)
 
-    # Boucle d'amélioration
-    cost_improved = True
-    while cost_improved:
-        cost_improved = False
-        for i in range(k):
-            # Définition du voisinage :
-            # Idée : Générer un ensemble de solutions voisines égal au nombre de stations principales
-            main_station_opened_neighbor = main_station_opened[:]
-            # Inversion de l'état de la station principale
-            main_station_opened_neighbor[i] = 1 - main_station_opened_neighbor[i]
+        # Boucle d'amélioration
+        cost_improved = True
+        while cost_improved:
+            cost_improved = False
+            for i in range(k):
+                # Définition du voisinage :
+                # Idée : Générer un ensemble de solutions voisines égal au nombre de stations principales
+                main_station_opened_neighbor = main_station_opened[:]
+                # Inversion de l'état de la station principale
+                main_station_opened_neighbor[i] = 1 - main_station_opened_neighbor[i]
 
-            if sum(main_station_opened_neighbor) > 0:
-                association_index_neighbor = []
-                for satellite_station_index in range(n):
-                    min_cost, min_index = float('inf'), -1
-                    for main_station_index in range(k):
-                        # Définition des voisins valides
-                        if main_station_opened_neighbor[main_station_index] == 1:
-                            cost = problem.get_association_cost(main_station_index, satellite_station_index)
-                            if cost < min_cost:
-                                min_cost, min_index = cost, main_station_index
-                    # Sélection d'un voisin
-                    association_index_neighbor.append(min_index)
+                if sum(main_station_opened_neighbor) > 0:
+                    association_index_neighbor = []
+                    for satellite_station_index in range(n):
+                        min_cost, min_index = float('inf'), -1
+                        for main_station_index in range(k):
+                            # Définition des voisins valides
+                            if main_station_opened_neighbor[main_station_index] == 1:
+                                cost = problem.get_association_cost(main_station_index, satellite_station_index)
+                                if cost < min_cost:
+                                    min_cost, min_index = cost, main_station_index
+                        # Sélection d'un voisin
+                        association_index_neighbor.append(min_index)
 
-                # Mise à jour de la meilleure solution trouvée
-                new_cost = problem.calculate_cost(main_station_opened_neighbor, association_index_neighbor)
-                if new_cost < actual_cost:
-                    main_station_opened, association_index = main_station_opened_neighbor, association_index_neighbor
-                    actual_cost = new_cost
-                    cost_improved = True
-                    break
-    return main_station_opened, association_index
+                    # Mise à jour de la meilleure solution trouvée
+                    new_cost = problem.calculate_cost(main_station_opened_neighbor, association_index_neighbor)
+                    if new_cost < actual_cost:
+                        main_station_opened, association_index = main_station_opened_neighbor, association_index_neighbor
+                        actual_cost = new_cost
+                        cost_improved = True
+                        break
+                        
+        if actual_cost < best_cost:
+            best_cost = actual_cost
+            best_solution = (main_station_opened, association_index)
+            
+    return best_solution
 
 if __name__ == "__main__":
     solve(UFLP("instance_A_4_6"))
