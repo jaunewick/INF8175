@@ -63,8 +63,8 @@ def solve(problem: UFLP) -> Tuple[List[int], List[int]]:
     # k : Nombre de stations principales
     k = problem.n_main_station
 
+    best_solution = (main_station_opened := [], association_index := [])
     best_cost = float('inf')
-    best_solution = ([], [])
     restart = 10
     for _ in range(restart):
         # Génération d'une solution initiale aléatoire
