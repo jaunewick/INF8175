@@ -1,5 +1,5 @@
-% NOM_ETUDIANT_1 (MATRICULE_1)
-% NOM_ETUDIANT_2 (MATRICULE_2)
+% RENEL LHERISSON (2089776)
+% DANIEL GIAO (MATRICULE_2)
 
 include "globals.mzn";
 
@@ -22,7 +22,21 @@ var int: longueur;
 % Partie étudiant
 %-----------------------------------------------------------------------------%
 
+% Contrainte pour garantir que la premiere frequence est 0
+constraint frequences[1] = 0;
 
+% Contrainte pour garantir que les fréquences sont placées dans l'ordre croissant
+constraint increasing(frequences);
+
+% Contrainte pour garantir que toutes les fréquences sont réparties à des distances
+% différentes les unes des autres
+constraint alldifferent(distances);
+
+% Contrainte pour définir la longueur totale de la plage
+constraint longueur = max(frequences);
+
+% Contrainte pour limiter la longueur de la plage
+constraint longueur <= sum([abs(distances[i]) | i in 1..(m*(m-1)) div 2]);
 
 %-----------------------------------------------------------------------------%
 
