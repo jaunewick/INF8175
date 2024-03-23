@@ -1,5 +1,5 @@
-% NOM_ETUDIANT_1 (MATRICULE_1)
-% NOM_ETUDIANT_2 (MATRICULE_2)
+% RENEL LHERISSON (2089776)
+% DANIEL GIAO (2120073)
 
 include "globals.mzn";
 
@@ -31,6 +31,59 @@ var int: objectif_match_espaces;
 % Partie étudiant
 %-----------------------------------------------------------------------------%
 
+% Contrainte 1: Deux équipe doivent être présente sur le même terrain.
+constraint forall(e1, e2 in equipes where e1 < e2) (
+    (calendrier[e1, dates[e1, e2].1] = calendrier[e2, dates[e1, e2].1]) /\
+    (calendrier[e1, dates[e1, e2].2] = calendrier[e2, dates[e1, e2].2])
+);
+
+% Contrainte 2: Un match doit avoir lieu sur le terrain désigné comme le domicile de l’une des deux équipes.
+constraint forall(e1, e2 in equipes where e1 < e2) (
+    (calendrier[e1, dates[e1, e2].1] = e1 \/ calendrier[e1, dates[e1, e2].1] = e2) /\
+    (calendrier[e1, dates[e1, e2].2] = e1 \/ calendrier[e1, dates[e1, e2].2] = e2)
+);
+
+% Contrainte 3: Un terrain ne peut accueillir plus de deux équipes.
+constraint forall(j in jours, t in terrains where t > 0) (
+    sum(e in equipes) (calendrier[e, j] = t) <= 2
+);
+
+% Contrainte 4: Si une équipe ne joue pas lors d’une journée, elle est placée sur le terrain n°0.
+constraint forall(e in equipes, j in jours) (
+    calendrier[e, j] >= 0
+);
+
+% Contrainte 5: Une équipe ne doit pas jouer trop souvent à domicile, elle n’est donc pas autorisée à jouer plus de 7 jours sur son propre terrain.
+constraint forall(e in equipes) (
+    count([calendrier[e, j] | j in jours], e) <= 7
+);
+
+% Contrainte 6: Les équipes doivent jouer deux fois l’une contre l’autre.
+constraint forall(e1, e2 in equipes where e1 < e2) (
+    rencontres[e1, e2] = 2
+);
+
+% Contrainte 7: Les deux rencontres de deux équipes doivent être espacées de 3 jours au minimum. 
+constraint forall(e1, e2 in equipes where e1 < e2) (
+    abs(dates[e1, e2].2 - dates[e1, e2].1) >= 3
+);
+
+% Contrainte 8: Les deux rencontres de deux équipes doivent avoir lieu sur des terrains différents.
+constraint forall(e1, e2 in equipes where e1 < e2) (
+    calendrier[e1, dates[e1, e2].1] != calendrier[e1, dates[e1, e2].2]
+);
+
+% Contrainte symétrique pour que le premier match entre chaque paire d'équipes a lieu sur le terrain de e1
+constraint forall(e1, e2 in equipes where e1 < e2)(
+    calendrier[e1, dates[e1, e2].1] = e1
+);
+
+% Maximiser objectif_match_espaces
+% i.e. le nombre de fois où deux matchs entre les mêmes équipes sont espacés par aux moins 6 jours
+objectif_match_espaces = sum(e1, e2 in equipes where e1 < e2) (
+    abs(dates[e1, e2].2 - dates[e1, e2].1)  >=  6
+);
+solve maximize objectif_match_espaces;
 
 %-----------------------------------------------------------------------------%
 
