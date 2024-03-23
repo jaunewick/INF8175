@@ -73,13 +73,13 @@ constraint forall(e1, e2 in equipes where e1 < e2) (
     calendrier[e1, dates[e1, e2].1] != calendrier[e1, dates[e1, e2].2]
 );
 
-% Contrainte symétrique pour que le premier match entre chaque paire d'équipes a lieu sur le terrain de e1
-constraint forall(e1, e2 in equipes where e1 < e2)(
+% Contrainte symétrique pour que le premier match entre chaque paire d'équipes ait lieu sur le terrain de e1.
+constraint forall(e1, e2 in equipes where e1 < e2) (
     calendrier[e1, dates[e1, e2].1] = e1
 );
 
 % Maximiser objectif_match_espaces
-% i.e. le nombre de fois où deux matchs entre les mêmes équipes sont espacés par aux moins 6 jours
+% i.e. le nombre de fois où deux matchs entre les mêmes équipes sont espacés par aux moins 6 jours.
 objectif_match_espaces = sum(e1, e2 in equipes where e1 < e2) (
     abs(dates[e1, e2].2 - dates[e1, e2].1)  >=  6
 );
