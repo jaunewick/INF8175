@@ -8,11 +8,11 @@ import random
 
     Description succinte de l'implementation :
     La fonction solve utilise une recherche locale avec redémarrages.
-    Elle génère des solutions initiales aléatoires
+    Elle génère une solution initiale aléatoire
     et améliore ces solutions en inversant l'état des stations principales (ouvertes/fermées)
     et en recalculant les associations des stations satellites pour minimiser le coût.
-    Le redémarrage permet de s'en sortir des minimas locaux.
-    Ainsi, la meilleure solution trouvée est retournée au cours de tous les redémarrages.
+    Le redémarrage permet de sortir des minimas locaux.
+    Ainsi, la meilleure solution trouvée est retournée apres les redémarrages.
     ...
 """
 
@@ -38,27 +38,30 @@ def solve(problem: UFLP) -> Tuple[List[int], List[int]]:
     best_solution = ()
     best_cost = float('inf')
 
-    # Nombre de redémarrage
+    # Nombre de redémarrage fixé à 10 au cas où on tombe dans un minimum local
     restart = 10
+    # Boucle de redémarrage
     for _ in range(restart):
-        # Génération d'une solution initiale aléatoire
+        # Génération d'une solution initiale aléatoire avec au moins une station principale ouverte
         main_station_opened = [random.randint(0, 1) for _ in range(k)]
-        # Au moins une station principale doit être ouverte, sinon infaisable
+        # Tester qu'au moins une station principale doit être ouverte, sinon la solution a calculer devient infaisable
         while sum(main_station_opened) == 0:
             main_station_opened = [random.randint(0, 1) for _ in range(k)]
         open_stations = [i for i, station in enumerate(main_station_opened) if station == 1]
         association_index = [random.choice(open_stations) for _ in range(n)]
 
-        # Cout de la solution initiale
+        # Cout de la solution initiale générée
         actual_cost = problem.calculate_cost(main_station_opened, association_index)
 
-        # Boucle d'amélioration de la solution initiale
+        # Boucle d'amélioration de la solution initiale générée
         cost_improved = True
+        # Tant que le coût de la solution est amélioré, on continue d'améliorer la solution
         while cost_improved:
             cost_improved = False
+            # Amélioration de la solution
             main_station_opened, association_index, actual_cost, cost_improved = improve_solution(problem, main_station_opened, association_index, actual_cost, k, n)
 
-        # Mise à jour de la meilleure solution trouvée
+        # Mise à jour de la meilleure solution trouvée après chaque redémarrage
         if actual_cost < best_cost:
             best_cost = actual_cost
             best_solution = (main_station_opened, association_index)
@@ -82,14 +85,20 @@ def improve_solution(problem: UFLP, main_station_opened: List[int], association_
         Tuple[List[int], List[int], float, bool]: The updated main_station_opened, association_index, actual_cost, and cost_improved.
     """
     cost_improved = False
+    # Iterate over the main stations and update the associations
     for i in range(k):
+        # Create a neighbor solution by changing the state with current main station opened
         main_station_opened_neighbor = main_station_opened[:]
         main_station_opened_neighbor[i] = 1 - main_station_opened_neighbor[i]
-
+        # If at least one main station is opened, we update the associations
         if sum(main_station_opened_neighbor) > 0:
+            # Find the association index for each satellite station based on the opened main stations
             association_index_neighbor = find_association_index(problem, main_station_opened_neighbor, n, k)
+            # Calculate the cost of the new solution
             new_cost = problem.calculate_cost(main_station_opened_neighbor, association_index_neighbor)
+            # If the new cost is less than the actual cost, we update the solution
             if new_cost < actual_cost:
+                # Update the solution
                 main_station_opened, association_index = main_station_opened_neighbor, association_index_neighbor
                 actual_cost = new_cost
                 cost_improved = True
@@ -111,13 +120,19 @@ def find_association_index(problem: UFLP, main_station_opened: List[int], n: int
         List[int]: The association index for each satellite station.
     """
     association_index = []
+    # Find the association index for each satellite station based on the opened main stations
     for satellite_station_index in range(n):
         min_cost, min_index = float('inf'), -1
+        # Find the main station with the minimum association cost for the satellite station
         for main_station_index in range(k):
+            # If the main station is opened, we calculate the association cost
             if main_station_opened[main_station_index] == 1:
+                # Calculate the association cost
                 cost = problem.get_association_cost(main_station_index, satellite_station_index)
+                # Update the minimum cost and index
                 if cost < min_cost:
                     min_cost, min_index = cost, main_station_index
+        # Append the index of the main station with the minimum association cost
         association_index.append(min_index)
 
     return association_index
