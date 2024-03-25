@@ -60,12 +60,12 @@ constraint forall(e in equipes) (
 
 % Contrainte 6: Les équipes doivent jouer deux fois l’une contre l’autre.
 constraint forall(e1, e2 in equipes where e1 < e2) (
-    rencontres[e1, e2] = 2
+    sum(j in jours) ((calendrier[e1, j ] = e2) \/ (calendrier[e2, j] = e1)) = 2
 );
 
 % Contrainte 7: Les deux rencontres de deux équipes doivent être espacées de 3 jours au minimum. 
 constraint forall(e1, e2 in equipes where e1 < e2) (
-    abs(dates[e1, e2].2 - dates[e1, e2].1) >= 3
+    dates[e1, e2].2 - dates[e1, e2].1 > 3
 );
 
 % Contrainte 8: Les deux rencontres de deux équipes doivent avoir lieu sur des terrains différents.
@@ -81,7 +81,7 @@ constraint forall(e1, e2 in equipes where e1 < e2) (
 % Maximiser objectif_match_espaces
 % i.e. le nombre de fois où deux matchs entre les mêmes équipes sont espacés par aux moins 6 jours.
 objectif_match_espaces = sum(e1, e2 in equipes where e1 < e2) (
-    abs(dates[e1, e2].2 - dates[e1, e2].1)  >=  6
+    abs(dates[e1, e2].2 - dates[e1, e2].1)  >  6
 );
 solve maximize objectif_match_espaces;
 
