@@ -1,3 +1,4 @@
+import numpy as np
 import nn
 from backend import PerceptronDataset, RegressionDataset, DigitClassificationDataset
 
@@ -38,7 +39,7 @@ class PerceptronModel(object):
         Returns: 1 or -1
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 1 ***"
-        # Implémentation de l'équation (1):
+        # Équation 1 :
         return 1 if nn.as_scalar(self.run(x)) >= 0 else -1
 
     def train(self, dataset: PerceptronDataset) -> None:
@@ -51,7 +52,7 @@ class PerceptronModel(object):
             is_converged = True
             for x, y in dataset.iterate_once(1):
                 y_scalar = nn.as_scalar(y)
-                # Implémentation de l'équation (2):
+                # Équation 2 :
                 if self.get_prediction(x) != y_scalar:
                     self.w.update(x, y_scalar)
                     is_converged = False
@@ -66,6 +67,17 @@ class RegressionModel(object):
     def __init__(self) -> None:
         # Initialize your model parameters here
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        self.layers = []
+
+        # Hyperparamètres du modèle :
+        # Dimensions des couches cachées
+        self.layer_sizes = [400, 400]
+        # Taille du batch pour l'entraînement
+        self.batch_sizes = 1
+        # Taux d'apprentissage
+        self.learning_rate = 0.05
+        # Nombre de couches cachées
+        self.num_hidden_layers = 2
 
     def run(self, x: nn.Constant) -> nn.Node:
         """
@@ -77,6 +89,14 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        y_pred = x
+        for weight, bias, weight_out, bias_out in self.layers:
+            linear = nn.Linear(y_pred, weight)
+            biased = nn.AddBias(linear, bias)
+            activated = nn.ReLU(biased)
+            linear_out = nn.Linear(activated, weight_out)
+            y_pred = nn.AddBias(linear_out, bias_out)
+        return y_pred
 
     def get_loss(self, x: nn.Constant, y: nn.Constant) -> nn.Node:
         """
@@ -89,12 +109,51 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        return nn.SquareLoss(self.run(x), y)
 
     def train(self, dataset: RegressionDataset) -> None:
         """
         Trains the model.
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        threshold = 0.02
+        # Taille du batch pour l'entraînement
+        self.batch_size = int(0.3 * len(dataset.x))
+
+        # Ajuster la taille du batch pour qu'il soit un multiple de la taille du dataset
+        self.batch_size += -self.batch_size % len(dataset.x)
+        
+        # Initialiser les paramètres du modèle
+        self.layers = [
+            [
+                nn.Parameter(1, self.layer_sizes[i]),
+                nn.Parameter(1, self.layer_sizes[i]),
+                nn.Parameter(self.layer_sizes[i], 1),
+                nn.Parameter(1, 1)
+            ]
+            for i in range(self.num_hidden_layers)
+        ]
+        
+        # Entraîner le modèle
+        while True:
+            loss_values = []
+            for x_batch, y_batch in dataset.iterate_once(self.batch_size) :
+                loss = self.get_loss(x_batch, y_batch)
+                loss_values.append(nn.as_scalar(loss))
+                
+                # Récupérer tous les paramètres du modèle
+                params = [param for layer in self.layers for param in layer]
+                
+                # Calculer les gradients de la loss par rapport à chaque paramètre
+                gradients = nn.gradients(loss, params)
+                
+                # Mettre à jour les paramètres du modèle
+                for param, gradient in zip(params, gradients) :
+                    param.update(gradient, -self.learning_rate)
+            
+            # Vérifier si la perte moyenne est inférieure à 0,02
+            if np.mean(loss_values) <= threshold :
+                break
 
 
 class DigitClassificationModel(object):
