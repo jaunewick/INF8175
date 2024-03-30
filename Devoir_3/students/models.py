@@ -124,10 +124,11 @@ class RegressionModel(object):
         # Seuil de perte
         threshold = 0.02
         # Taille du batch pour l'entraînement
-        self.batch_size = int(0.3 * len(dataset.x))
+        self.batch_size = int(0.01 * len(dataset.x))
 
         # Ajuster la taille du batch pour qu'il soit un multiple de la taille du dataset
-        self.batch_size += -self.batch_size % len(dataset.x)
+        while len(dataset.x) % self.batch_size :
+            self.batch_size += 1
         
         # Initialiser les paramètres du modèle
         self.layers = [
