@@ -72,10 +72,8 @@ class RegressionModel(object):
         # Hyperparamètres du modèle :
         # Dimensions des couches cachées
         self.layer_sizes = [400, 400]
-        # Taille du batch pour l'entraînement
-        self.batch_sizes = 1
         # Taux d'apprentissage
-        self.learning_rate = 0.05
+        self.learning_rate = 0.08
         # Nombre de couches cachées
         self.num_hidden_layers = 2
 
@@ -174,6 +172,23 @@ class DigitClassificationModel(object):
     def __init__(self) -> None:
         # Initialize your model parameters here
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
+        # Initialiser les paramètres du modèle
+        self.layers = [
+            [
+                nn.Parameter(784, 256),
+                nn.Parameter(1, 256),
+                nn.Parameter(256, 784),
+                nn.Parameter(1,784)
+            ],
+            [
+                nn.Parameter(784, 128),
+                nn.Parameter(1, 128),
+                nn.Parameter(128, 10),
+                nn.Parameter(1,10)
+            ]
+        ]
+        # Taux d'apprentissage
+        self.learning_rate = 0.14
 
     def run(self, x: nn.Constant) -> nn.Node:
         """
@@ -191,6 +206,16 @@ class DigitClassificationModel(object):
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
 
+        y_pred = x
+        for weight, bias, weight_out, bias_out in self.layers:
+            linear = nn.Linear(y_pred, weight)
+            biased = nn.AddBias(linear, bias)
+            activated = nn.ReLU(biased)
+            linear_out = nn.Linear(activated, weight_out)
+            y_pred = nn.AddBias(linear_out, bias_out)
+        return y_pred
+
+
     def get_loss(self, x: nn.Constant, y: nn.Constant) -> nn.Node:
         """
         Computes the loss for a batch of examples.
@@ -205,9 +230,37 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
+        return nn.SoftmaxLoss(self.run(x), y)
 
     def train(self, dataset: DigitClassificationDataset) -> None:
         """
         Trains the model.
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
+        threshold = 0.97
+        # Taille du batch pour l'entraînement
+        self.batch_size = int(0.003 * len(dataset.x))
+
+        # Ajuster la taille du batch pour qu'il soit un multiple de la taille du dataset
+        while len(dataset.x) % self.batch_size :
+            self.batch_size += 1
+
+        # Entraîner le modèle
+        while True:
+            loss_values = []
+            for x_batch, y_batch in dataset.iterate_once(self.batch_size) :
+                loss = self.get_loss(x_batch, y_batch)
+                loss_values.append(nn.as_scalar(loss))
+                
+                # Récupérer tous les paramètres du modèle
+                params = [param for layer in self.layers for param in layer]
+                
+                # Calculer les gradients de la loss par rapport à chaque paramètre
+                gradients = nn.gradients(loss, params)
+                
+                # Mettre à jour les paramètres du modèle
+                for param, gradient in zip(params, gradients) :
+                    param.update(gradient, -self.learning_rate)
+
+            if dataset.get_validation_accuracy() > threshold :
+                break
