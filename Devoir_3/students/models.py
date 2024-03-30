@@ -75,7 +75,7 @@ class RegressionModel(object):
         # Dimensions des couches cachées
         self.layer_sizes = [400, 400]
         # Taux d'apprentissage
-        self.learning_rate = 0.08
+        self.learning_rate = 0.05
         # Nombre de couches cachées
         self.num_hidden_layers = 2
 
