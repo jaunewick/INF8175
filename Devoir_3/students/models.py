@@ -2,7 +2,6 @@ import numpy as np
 import nn
 from backend import PerceptronDataset, RegressionDataset, DigitClassificationDataset
 
-
 class PerceptronModel(object):
     def __init__(self, dimensions: int) -> None:
         """
@@ -153,7 +152,6 @@ class RegressionModel(object):
             if np.mean(loss_values) <= threshold :
                 break
 
-
 class DigitClassificationModel(object):
     """
     A model for handwritten digit classification using the MNIST dataset.
@@ -239,7 +237,7 @@ class DigitClassificationModel(object):
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
         threshold = 0.97
         # Taille du batch pour l'entraînement
-        self.batch_size = int(0.003 * len(dataset.x))
+        self.batch_size = int(0.001 * len(dataset.x))
 
         # Ajuster la taille du batch pour qu'il soit un multiple de la taille du dataset
         while len(dataset.x) % self.batch_size :
@@ -261,6 +259,7 @@ class DigitClassificationModel(object):
                 # Mettre à jour les paramètres du modèle
                 for param, gradient in zip(params, gradients) :
                     param.update(gradient, -self.learning_rate)
-
+            
+            # Précision d'au moins 97% sur l'ensemble de test
             if dataset.get_validation_accuracy() > threshold :
                 break
