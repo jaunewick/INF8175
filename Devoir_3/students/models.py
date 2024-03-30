@@ -185,13 +185,19 @@ class DigitClassificationModel(object):
             [
                 nn.Parameter(784, 256),
                 nn.Parameter(1, 256),
-                nn.Parameter(256, 784),
-                nn.Parameter(1,784)
+                nn.Parameter(256, 128),
+                nn.Parameter(1,128)
             ],
             [
-                nn.Parameter(784, 128),
+                nn.Parameter(128, 128),
                 nn.Parameter(1, 128),
-                nn.Parameter(128, 10),
+                nn.Parameter(128, 64),
+                nn.Parameter(1,64)
+            ],
+            [
+                nn.Parameter(64, 64),
+                nn.Parameter(1, 64),
+                nn.Parameter(64, 10),
                 nn.Parameter(1,10)
             ]
         ]
