@@ -1,3 +1,5 @@
+# Binome 1 : Renel Lherisson (2089776)
+# Binome 2 : Daniel Giao (2120073)
 import numpy as np
 import nn
 from backend import PerceptronDataset, RegressionDataset, DigitClassificationDataset
