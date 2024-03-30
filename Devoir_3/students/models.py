@@ -202,7 +202,7 @@ class DigitClassificationModel(object):
             ]
         ]
         # Taux d'apprentissage
-        self.learning_rate = 0.14
+        self.learning_rate = 0.1
 
     def run(self, x: nn.Constant) -> nn.Node:
         """
