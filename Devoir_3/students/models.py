@@ -29,6 +29,7 @@ class PerceptronModel(object):
         Returns: a node containing a single number (the score)
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 1 ***"
+        # Calculer le produit scalaire entre les poids et les données
         return nn.DotProduct(x, self.get_weights())
 
     def get_prediction(self, x: nn.Constant) -> int:
@@ -38,8 +39,9 @@ class PerceptronModel(object):
         Returns: 1 or -1
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 1 ***"
-        # Équation 1 :
-        return 1 if nn.as_scalar(self.run(x)) >= 0 else -1
+        # Retourner 1 si le score est supérieur ou égal à 0, sinon -1
+        score = nn.as_scalar(self.run(x))
+        return 1 if score >= 0 else -1
 
     def train(self, dataset: PerceptronDataset) -> None:
         """
@@ -47,11 +49,12 @@ class PerceptronModel(object):
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 1 ***"
         is_converged = False
+        # Entraîner le modèle jusqu'à ce qu'il converge
         while not is_converged:
             is_converged = True
             for x, y in dataset.iterate_once(1):
                 y_scalar = nn.as_scalar(y)
-                # Équation 2 :
+                # Si la prédiction est incorrecte, mettre à jour les poids
                 if self.get_prediction(x) != y_scalar:
                     self.w.update(x, y_scalar)
                     is_converged = False
@@ -88,10 +91,15 @@ class RegressionModel(object):
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
         y_pred = x
         for weight, bias, weight_out, bias_out in self.layers:
+            # Appliquer une transformation linéaire
             linear = nn.Linear(y_pred, weight)
+            # Ajouter le biais
             biased = nn.AddBias(linear, bias)
+            # Appliquer la fonction d'activation ReLU
             activated = nn.ReLU(biased)
+            # Appliquer une transformation linéaire
             linear_out = nn.Linear(activated, weight_out)
+            # Ajouter le biais
             y_pred = nn.AddBias(linear_out, bias_out)
         return y_pred
 
@@ -113,6 +121,7 @@ class RegressionModel(object):
         Trains the model.
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        # Seuil de perte
         threshold = 0.02
         # Taille du batch pour l'entraînement
         self.batch_size = int(0.3 * len(dataset.x))
@@ -148,7 +157,7 @@ class RegressionModel(object):
                 for param, gradient in zip(params, gradients) :
                     param.update(gradient, -self.learning_rate)
             
-            # Vérifier si la perte moyenne est inférieure à 0,02
+            # Perte inférieure ou égale à 0.02
             if np.mean(loss_values) <= threshold :
                 break
 
@@ -206,10 +215,15 @@ class DigitClassificationModel(object):
 
         y_pred = x
         for weight, bias, weight_out, bias_out in self.layers:
+            # Appliquer une transformation linéaire
             linear = nn.Linear(y_pred, weight)
+            # Ajouter le biais
             biased = nn.AddBias(linear, bias)
+            # Appliquer la fonction d'activation ReLU
             activated = nn.ReLU(biased)
+            # Appliquer une transformation linéaire
             linear_out = nn.Linear(activated, weight_out)
+            # Ajouter le biais
             y_pred = nn.AddBias(linear_out, bias_out)
         return y_pred
 
@@ -235,6 +249,7 @@ class DigitClassificationModel(object):
         Trains the model.
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
+        # Seuil de précision
         threshold = 0.97
         # Taille du batch pour l'entraînement
         self.batch_size = int(0.001 * len(dataset.x))
