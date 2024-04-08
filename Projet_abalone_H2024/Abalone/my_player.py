@@ -1,3 +1,7 @@
+"""
+    Binome 1 : Renel Lherisson (2089776)
+    Binome 2 : Daniel Giao (2120073)
+"""
 from player_abalone import PlayerAbalone
 from game_state_abalone import GameStateAbalone
 from seahorse.game.action import Action
