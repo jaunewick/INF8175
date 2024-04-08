@@ -2,11 +2,8 @@ from player_abalone import PlayerAbalone
 from game_state_abalone import GameStateAbalone
 from seahorse.game.action import Action
 from seahorse.game.game_state import GameState
-
-from typing import Dict, List, Set, Tuple
+from typing import Tuple
 from player_abalone import PlayerAbalone
-from typing import Dict, Tuple
-from seahorse.game.game_layout.board import Piece
 
 
 class MyPlayer(PlayerAbalone):
@@ -72,7 +69,6 @@ class MyPlayer(PlayerAbalone):
             Tuple: Tuple containing the best action and its corresponding value
         """
         if state.is_done() or depth == max_depth:
-            # Handle None return from apply_heuristic
             return None, self.apply_heuristic(state) or float('-inf')
         v = float('-inf')
         best_action = None
@@ -102,7 +98,6 @@ class MyPlayer(PlayerAbalone):
             Tuple: Tuple containing the best action and its corresponding value
         """
         if state.is_done() or depth == max_depth:
-            # Handle None return from apply_heuristic
             return None, self.apply_heuristic(state) or float('inf')
         v = float('inf')
         best_action = None
@@ -129,25 +124,46 @@ class MyPlayer(PlayerAbalone):
         """
         my_marbles, opponent_marbles = 0, 0
         center_control, formation_strength_score = 0, 0
-        
+
         for position, piece in state.get_rep().get_env().items():
             if piece.get_owner_id() == self.get_id():
                 my_marbles += 1
                 if self.is_center(position):
                     center_control += 1
-                formation_strength_score += self.formation_strength(position, state)
+                formation_strength_score += self.formation_strength(
+                    position, state)
             else:
                 opponent_marbles += 1
-            
-        score = (my_marbles - opponent_marbles) + 0.5 * center_control + 0.2 * formation_strength_score
+
+        score = (my_marbles - opponent_marbles) + 0.5 * \
+            center_control + 0.2 * formation_strength_score
         return score
 
     def is_center(self, position: Tuple[int, int]) -> bool:
-        center_positions = [(7, 5), (9, 5), (10, 4), (8, 4), (9, 3), (7, 3), (6, 4)]
+        """
+        Function to check if the given position is in the center of the board.
+
+        Args:
+            position (Tuple[int, int]): Position to check
+
+        Returns:
+            bool: True if the position is in the center, False otherwise
+        """
+
+        center_positions = [(7, 5), (9, 5), (10, 4),
+                            (8, 4), (9, 3), (7, 3), (6, 4)]
         return position in center_positions
 
-
     def formation_strength(self, position: Tuple[int, int], state: GameStateAbalone) -> int:
+        """
+        Function to calculate the formation strength of the player.
+        Args:
+            position (Tuple[int, int]): position of the player
+            state (GameStateAbalone): current game state representation
+
+        Returns:
+            int: strength of the formation
+        """
         strength = 0
         neighbors = state.get_neighbours(position[0], position[1])
         for direction, neighbor_pos in neighbors.items():
