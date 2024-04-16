@@ -116,6 +116,7 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 2 ***"
+        # Utiliser la perte quadratique (L2)
         return nn.SquareLoss(self.run(x), y)
 
     def train(self, dataset: RegressionDataset) -> None:
@@ -132,7 +133,7 @@ class RegressionModel(object):
         while len(dataset.x) % self.batch_size :
             self.batch_size += 1
         
-        # Initialiser les paramètres du modèle
+        # Initialiser les paramètres du modèle pour chaque couche cachée, num_hidden_layers = 2
         self.layers = [
             [
                 nn.Parameter(1, self.layer_sizes[i]),
@@ -147,6 +148,7 @@ class RegressionModel(object):
         while True:
             loss_values = []
             for x_batch, y_batch in dataset.iterate_once(self.batch_size) :
+                # Calculer la loss (L2)
                 loss = self.get_loss(x_batch, y_batch)
                 loss_values.append(nn.as_scalar(loss))
                 
@@ -183,11 +185,17 @@ class DigitClassificationModel(object):
         # Initialize your model parameters here
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
         # Initialiser les paramètres du modèle
+        # Couche d'entrée : 784 (28x28 pixels)
+        # Couche cachée 1 : 784 -> 256 (255 pour le niveau de gris)
+        # Couche cachée 2 : 256 -> 128 (128, une puissance de 2, la moitié de la couche cachée 1)
+        # Couche cachée 3 : 128 -> 64 (64, une puissance de 2, la moitié de la couche cachée 2)
+        # Couche de sortie : 64 -> 10 (10 classes, les chiffres de 0 à 9)
+
         self.layers = [
             [
-                nn.Parameter(784, 256),
-                nn.Parameter(1, 256),
-                nn.Parameter(256, 128),
+                nn.Parameter(784, 255),
+                nn.Parameter(1, 255),
+                nn.Parameter(255, 128),
                 nn.Parameter(1,128)
             ],
             [
@@ -251,6 +259,7 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
+        # Utiliser la perte Softmax (cross-entropy)
         return nn.SoftmaxLoss(self.run(x), y)
 
     def train(self, dataset: DigitClassificationDataset) -> None:
@@ -271,6 +280,7 @@ class DigitClassificationModel(object):
         while True:
             loss_values = []
             for x_batch, y_batch in dataset.iterate_once(self.batch_size) :
+                # Calculer la loss (Softmax)
                 loss = self.get_loss(x_batch, y_batch)
                 loss_values.append(nn.as_scalar(loss))
                 
