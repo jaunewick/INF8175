@@ -186,7 +186,7 @@ class DigitClassificationModel(object):
         "*** TODO: COMPLETE HERE FOR QUESTION 3 ***"
         # Initialiser les paramètres du modèle
         # Couche d'entrée : 784 (28x28 pixels)
-        # Couche cachée 1 : 784 -> 256 (255 pour le niveau de gris)
+        # Couche cachée 1 : 784 -> 255 (255 pour le niveau de gris)
         # Couche cachée 2 : 256 -> 128 (128, une puissance de 2, la moitié de la couche cachée 1)
         # Couche cachée 3 : 128 -> 64 (64, une puissance de 2, la moitié de la couche cachée 2)
         # Couche de sortie : 64 -> 10 (10 classes, les chiffres de 0 à 9)
